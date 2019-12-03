@@ -4,7 +4,7 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
-const movieData = require('./movie-data.js');
+const movieData = require('./movie-data.json');
 
 //console.log(process.env.API_TOKEN);
 const app = express();
@@ -17,7 +17,6 @@ app.use(cors());
 app.use(function validateBearerToken(req, res, next) {
     const apiToken = process.env.API_TOKEN;
     const authToken = req.get('Authorization');
-
 
     console.log(apiToken);
     console.log(authToken);
@@ -33,25 +32,27 @@ app.get('/movie', function getMovie(req, res) {
     let movieResults = movieData;
 
     if (req.query.genre) {
-        movieResults.filter(movie => {
-            movie.genre.toLowerCase().includes(`${req.query.genre}`);
+        movieResults = movieResults.filter(movie => {
+            movie.genre.toLowerCase().includes(req.query.genre);
         });
+
     }
 
     if (req.query.country) {
-        movieResults.filter(movie => {
-            movie.country.toLowerCase().includes(`${req.query.country}`);
+        movieResults = movieResults.filter(movie => {
+            movie.country.toLowerCase().includes(req.query.country);
         })
     }
 
     if (req.query.avg_vote) {
-        movieResults.filter(movie => {
+        movieResults = movieResults.filter(movie => {
             let vote = Number(req.query.avg_vote);
             let avgVote = Number(movie.avg_vote);
             avgVote >= vote;
         })
     }
-
+    
+    res.json(movieResults);
 })
 
 
