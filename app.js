@@ -33,14 +33,14 @@ app.get('/movie', function getMovie(req, res) {
     let movieResults = movieData;
 
     if (req.query.genre) {
-        movieResults = movieResults.filter(movie => {
+     return   movieResults = movieResults.filter(movie => {
             movie.genre.toLowerCase().includes(req.query.genre);
         });
 
     }
 
     if (req.query.country) {
-        movieResults = movieResults.filter(movie => {
+     return   movieResults = movieResults.filter(movie => {
             movie.country.toLowerCase().includes(req.query.country);
         })
     }
@@ -48,7 +48,7 @@ app.get('/movie', function getMovie(req, res) {
     if (req.query.avg_vote) {
         movieResults = movieResults.filter(movie => {
             let vote = Number(req.query.avg_vote);
-            let avgVote = Number(movie.avg_vote);
+      return  let avgVote = Number(movie.avg_vote);
             avgVote >= vote;
         })
     }
@@ -65,7 +65,7 @@ app.use((error, req, res, next) => {
     }
     res.status(500).json(response)
   })
-  
+
 const PORT = process.env.PORT || 8000
 
   app.listen(PORT, () => {
