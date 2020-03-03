@@ -1,15 +1,16 @@
 /* eslint-disable indent */
 require('dotenv').config();
 const express = require('express');
-const morganSetting = process.env.NODE_ENV === 'production' ? 'tiny' : 'common'
-app.use(morgan(morganSetting))
+const morgan = require('morgan');
+const morganSetting = process.env.NODE_ENV === 'production' ? 'tiny' : 'common';
+
 const cors = require('cors');
 const helmet = require('helmet');
 const movieData = require('./movie-data.json');
 
 //console.log(process.env.API_TOKEN);
 const app = express();
-
+app.use(morgan(morganSetting));
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());
@@ -48,9 +49,10 @@ app.get('/movie', function getMovie(req, res) {
     if (req.query.avg_vote) {
         movieResults = movieResults.filter(movie => {
             let vote = Number(req.query.avg_vote);
-      return  let avgVote = Number(movie.avg_vote);
+            let avgVote = Number(movie.avg_vote);
             avgVote >= vote;
-        })
+        });
+        return movieResults;
     }
     
     res.json(movieResults);
