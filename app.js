@@ -34,25 +34,22 @@ app.get('/movie', function getMovie(req, res) {
     let movieResults = movieData;
 
     if (req.query.genre) {
-     return   movieResults = movieResults.filter(movie => {
-            movie.genre.toLowerCase().includes(req.query.genre);
-        });
-
+        console.log(req.query.genre);
+        movieResults = movieResults.filter(movie => 
+            movie.genre.toLowerCase().includes(req.query.genre.toLowerCase().replace('_', ' '))
+        );
     }
 
     if (req.query.country) {
-     return   movieResults = movieResults.filter(movie => {
-            movie.country.toLowerCase().includes(req.query.country);
-        })
+        movieResults = movieResults.filter(movie => 
+            movie.country.toLowerCase().includes(req.query.country.toLowerCase().replace('_', ' '))
+        );
     }
 
     if (req.query.avg_vote) {
-        movieResults = movieResults.filter(movie => {
-            let vote = Number(req.query.avg_vote);
-            let avgVote = Number(movie.avg_vote);
-            avgVote >= vote;
-        });
-        return movieResults;
+        movieResults = movieResults.filter(movie => 
+          movie.avg_vote >= req.query.avg_vote
+        );
     }
     
     res.json(movieResults);
