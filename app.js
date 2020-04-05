@@ -1,59 +1,15 @@
-/* eslint-disable indent */
-require('dotenv').config();
-const express = require('express');
-const morgan = require('morgan');
-const morganSetting = process.env.NODE_ENV === 'production' ? 'tiny' : 'common';
+require('dotenv').config()
+const express = require('express')
+const morgan = require('morgan')
+const cors = require('cors')
+const helmet = require('helmet')
+const MOVIES = require('./movies-data-small.json')
 
-const cors = require('cors');
-const helmet = require('helmet');
-const movieData = require('./movie-data.json');
+const app = express()
 
-//console.log(process.env.API_TOKEN);
-const app = express();
-app.use(morgan(morganSetting));
-app.use(morgan('dev'));
-app.use(helmet());
-app.use(cors());
-
-
-app.use(function validateBearerToken(req, res, next) {
-    const apiToken = process.env.API_TOKEN;
-    const authToken = req.get('Authorization');
-
-    console.log(apiToken);
-    console.log(authToken);
-
-    if (!authToken || authToken.split(' ')[1] !== apiToken) {
-        return res.status(401).json({ error: 'Unauthorized Request' })
-    }
-    next();
-})
-
-
-app.get('/movie', function handleGetMovie(req, res) {
- 
-
-    if (req.query.genre) {
-        console.log(req.query.genre);
-        movieResults = movieResults.filter(movie => 
-            movie.genre.toLowerCase().includes(req.query.genre.toLowerCase().replace('_', ' '))
-        );
-    }
-
-    if (req.query.country) {
-        movieResults = movieResults.filter(movie => 
-            movie.country.toLowerCase().includes(req.query.country.toLowerCase().replace('_', ' '))
-        );
-    }
-
-    if (req.query.avg_vote) {
-        movieResults = movieResults.filter(movie => 
-          movie.avg_vote >= req.query.avg_vote
-        );
-    }
-    
-    res.json(movieResults);
-})
+app.use(morgan('dev'))
+app.use(cors())
+app.use(helmet())
 
 app.use(function validateBearerToken(req, res, next) {
   const apiToken = process.env.API_TOKEN
@@ -64,8 +20,32 @@ app.use(function validateBearerToken(req, res, next) {
   next()
 })
 
-const PORT = process.env.PORT || 8000
+app.get('/movie', function handleGetMovie(req, res) {
+  let response = MOVIES;
 
-  app.listen(PORT, () => {
-    console.log(`Server listening at http://localhost:${PORT}`)
-  })
+  if (req.query.genre) {
+    response = response.filter(movie =>
+      movie.genre.toLowerCase().includes(req.query.genre.toLowerCase())
+    )
+  }
+
+  if (req.query.country) {
+    response = response.filter(movie =>
+      movie.country.toLowerCase().includes(req.query.country.toLowerCase())
+    )
+  }
+
+  if (req.query.avg_vote) {
+    response = response.filter(movie =>
+      Number(movie.avg_vote) >= Number(req.query.avg_vote)
+    )
+  }
+
+  res.json(response)
+})
+
+const PORT = 9000
+
+app.listen(PORT, () => {
+  console.log(`Server listening at http://localhost:${PORT}`)
+})
